@@ -6,6 +6,8 @@
   <title>Gorkha 2015 Landslides — 3D Terrain + PGA &amp; MMI ShakeMap Explorer (Valagussa_2021.shp)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
+    :root { --background: #0b0f19; --foreground: #f1f5f9; --card: #111827; --border: #1e293b; --muted-foreground: #94a3b8; --primary: #38bdf8; }
+    html.light { --background: #f8fafc; --foreground: #0f172a; --card: #ffffff; --border: #e2e8f0; --muted-foreground: #64748b; --primary: #0284c7; }
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
@@ -118,13 +120,13 @@
         <div>
           <label class="text-xs text-[var(--muted-foreground)] block mb-1">Map onto 3D Terrain Mesh</label>
           <select id="terrain-theme" class="w-full text-xs rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] px-2.5 py-1.5 font-medium">
-            <option value="ksn" selected>Channel Steepness k_sn (cop30dem_..._near.tif) + Hillshade</option>
+            <option value="hypso" selected>Hypsometric Elevation + Hillshade</option>
+            <option value="ksn">Channel Steepness k_sn (cop30dem_..._near.tif) + Hillshade</option>
             <option value="susc_log">Bayesian Susceptibility (fp6a.gpkg — Log10 μ) + Hillshade</option>
             <option value="susc_lin">Bayesian Susceptibility Hotspots (fp6a.gpkg — Linear μ)</option>
             <option value="susc_sd">Bayesian Posterior Uncertainty (fp6a.gpkg — SD)</option>
             <option value="pga">PGA Ground Motion (pga_mean.flt) + Hillshade</option>
             <option value="mmi">MMI Intensity (mmi_mean.flt) + Hillshade</option>
-            <option value="hypso">Hypsometric Elevation + Hillshade</option>
             <option value="slope">Terrain Slope Steepness Heatmap</option>
             <option value="dark">Dark Relief (High-Contrast Base)</option>
             <option value="wire">3D Topographic Wireframe</option>
@@ -142,14 +144,14 @@
         <!-- Terrain Surface Colorbar -->
         <div id="terrain-legend-box" class="pt-0.5">
           <div class="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
-            <span id="terrain-legend-title" class="font-medium text-[var(--foreground)]">3D Terrain PGA Scale</span>
+            <span id="terrain-legend-title" class="font-medium text-[var(--foreground)]">3D Terrain Hypsometric Elevation (DEM)</span>
             <span class="font-mono text-xs">Iso-lines shown on 3D mesh</span>
           </div>
-          <div class="h-2.5 w-full rounded-full" id="terrain-legend-bar" style="background: linear-gradient(90deg, #2563eb, #06b6d4, #eab308, #f97316, #dc2626, #7f1d1d);"></div>
+          <div class="h-2.5 w-full rounded-full" id="terrain-legend-bar" style="background: linear-gradient(90deg, #38603e, #687e4e, #9e8c68, #bab2a8, #f8fafc);"></div>
           <div class="flex justify-between text-xs font-mono text-[var(--muted-foreground)] mt-1">
-            <span id="tleg-min">0.565 g</span>
-            <span id="tleg-mid">0.622 g</span>
-            <span id="tleg-max">0.680 g</span>
+            <span id="tleg-min">1,150 m</span>
+            <span id="tleg-mid">2,950 m</span>
+            <span id="tleg-max">4,750 m</span>
           </div>
         </div>
       </div>
@@ -249,7 +251,10 @@
 
       <!-- Floating Camera & Quick Layer Toolbar -->
       <div class="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-1.5 bg-[var(--card)]/90 backdrop-blur border border-[var(--border)] rounded-xl p-1.5 shadow-sm">
-        <button id="btn-quick-ksn" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-cyan-400 bg-cyan-500/15 text-[var(--foreground)]">
+        <button id="btn-quick-hypso" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-cyan-400 bg-cyan-500/15 text-[var(--foreground)]">
+          3D Elevation
+        </button>
+        <button id="btn-quick-ksn" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--background)] border border-[var(--border)]">
           3D k_sn Steepness
         </button>
         <button id="btn-quick-susc" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--background)] border border-[var(--border)]">
@@ -260,9 +265,6 @@
         </button>
         <button id="btn-quick-mmi" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--background)] border border-[var(--border)]">
           3D MMI Surface
-        </button>
-        <button id="btn-quick-hypso" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--background)] border border-[var(--border)]">
-          3D Elevation
         </button>
         <span class="text-[var(--border)] px-0.5">|</span>
         <button id="btn-cam-oblique" class="px-2 py-1 rounded-lg text-xs font-medium bg-[var(--background)] border border-[var(--border)]">
@@ -397,7 +399,7 @@
         regionId: 'trisuli_rasuwa',
         polyMode: 'draped',
         colorMode: 'ksn',
-        terrainTheme: 'ksn',     // Default directly to Channel Steepness Index k_sn on 3D terrain!
+        terrainTheme: 'hypso',   // Default to Hypsometric Elevation + Hillshade on 3D terrain!
         shakeScale: 'local',     // 'local' or 'regional'
         showContours: true,
         xrayRidges: false,
@@ -1337,7 +1339,23 @@
         const tMax = document.getElementById('tleg-max');
 
         const tBar = document.getElementById('terrain-legend-bar');
-        if (state.terrainTheme === 'ksn') {
+        if (state.terrainTheme === 'hypso' || state.terrainTheme === 'dark' || state.terrainTheme === 'wire') {
+          tTitle.textContent = state.terrainTheme === 'hypso'
+            ? '3D Terrain Hypsometric Elevation (DEM)'
+            : (state.terrainTheme === 'dark' ? '3D Dark Shaded Relief (DEM)' : '3D Topographic Wireframe (DEM)');
+          tBar.style.background = state.terrainTheme === 'dark'
+            ? 'linear-gradient(90deg, #22252a, #475569, #94a3b8)'
+            : 'linear-gradient(90deg, #38603e, #687e4e, #9e8c68, #bab2a8, #f8fafc)';
+          tMin.textContent = `${regData.zMin.toLocaleString()} m`;
+          tMid.textContent = `${Math.round(regData.zMid).toLocaleString()} m`;
+          tMax.textContent = `${regData.zMax.toLocaleString()} m`;
+        } else if (state.terrainTheme === 'slope') {
+          tTitle.textContent = '3D Terrain Slope Steepness (°)';
+          tBar.style.background = 'linear-gradient(90deg, #2d5f82, #7ca56e, #dc8728)';
+          tMin.textContent = '0°';
+          tMid.textContent = '25°';
+          tMax.textContent = '50°+';
+        } else if (state.terrainTheme === 'ksn') {
           const k0 = state.shakeScale === 'local' ? st.ksn_min : 50;
           const k1 = state.shakeScale === 'local' ? Math.max(k0 + 50, st.ksn_p90 * 1.25) : 1600;
           tTitle.textContent = '3D Terrain Channel Steepness (k_sn)';
