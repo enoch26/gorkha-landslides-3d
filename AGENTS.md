@@ -16,3 +16,11 @@
 3. **JSON Serialization of `numpy.float32` Arrays**
    - Calling `np.round(float32_arr, 3).tolist()` in Python produces 64-bit floats with binary representation artifacts (`0.16000000834465027`), inflating embedded HTML/JSON bundle sizes.
    - Always round elements as Python `float` (`[[round(float(v), decimals) for v in row] for row in arr]`).
+
+4. **PowerShell Inline Python Quirk with CSS Variables (`--border`)**
+   - Do not pass multi-line HTML/CSS strings containing `--` (such as Tailwind `border-[var(--border)]`) inside `python -c "..."` in PowerShell, as PowerShell's parser treats `--` as the unary decrement operator even inside double quotes when nested quotes occur. Write a standalone `.py` script file and execute `python script.py` instead.
+
+5. **Headless Chrome DevTools Recording & Standalone `ffmpeg` on Windows**
+   - System `PATH` does not include `ffmpeg`; use `imageio_ffmpeg.get_ffmpeg_exe()` (`pip install imageio-ffmpeg`) to obtain a precompiled Windows `ffmpeg` binary.
+   - When launching `chrome.exe --headless=new --remote-debugging-port=<port>` on Windows while a desktop Chrome session is already running, always pass an isolated `--user-data-dir=<temp_dir>`; otherwise Chrome attaches to the existing desktop session instead of opening an isolated headless viewport at the requested `--window-size`.
+   - When printing HTML/JS lines containing Unicode math/scientific symbols (such as `μ` `\u03bc`, `²`, or `—`) from Python on Windows PowerShell, call `sys.stdout.reconfigure(encoding='utf-8')` first to avoid `UnicodeEncodeError: 'charmap' codec can't encode character` under `cp1252`.
