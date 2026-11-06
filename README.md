@@ -66,6 +66,7 @@ Dataset versions may change; verify current data and metadata with the official 
 - **Frontend**: Three.js (3D WebGL visualization)
 - **Backend**: Python Flask (data processing)
 - **Deployment**: GitHub Pages
+- **3D development**: Created with assistance from Gemini 4.0 Aragon
 
 ## License
 Project data and code available under the repository license.
