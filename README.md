@@ -69,4 +69,4 @@ Dataset versions may change; verify current data and metadata with the official 
 - **3D development**: Created with assistance from Gemini 4.0 Aragon
 
 ## License
-Project data and code available under the repository license.
+The original source code in this repository is licensed under the MIT License; see [LICENSE](LICENSE). Third-party datasets and other assets are not covered by this license and remain subject to their providers' terms. See the data-source links above for source and attribution information.
