@@ -41,7 +41,7 @@
             Gorkha 2015 3D Terrain — Landslides + Landslide Susceptibility + k_sn Steepness + PGA/MMI
           </h1>
           <span class="text-xs px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)] font-mono">
-            Valagussa_2021.shp + Landslide Susceptibility + cop30dem_channel_tagged_pixels_near.tif + pga/mmi.flt
+            Valagussa_2021.shp + Landslide Susceptibility + Channel Steepness Index + pga/mmi.flt
           </span>
         </div>
         <p class="text-xs text-[var(--muted-foreground)]" id="region-subtitle">
@@ -126,7 +126,7 @@
           <label class="text-xs text-[var(--muted-foreground)] block mb-1">Map onto 3D Terrain Mesh</label>
           <select id="terrain-theme" class="w-full text-xs rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] px-2.5 py-1.5 font-medium">
             <option value="hypso" selected>Hypsometric Elevation + Hillshade</option>
-            <option value="ksn">Channel Steepness k_sn (cop30dem_..._near.tif) + Hillshade</option>
+            <option value="ksn">Channel Steepness Index (k_sn) + Hillshade</option>
             <option value="susc_log">Landslide Susceptibility (Log10 μ) + Hillshade</option>
             <option value="susc_lin">Landslide Susceptibility Hotspots (Linear μ)</option>
             <option value="susc_sd">Landslide Susceptibility Uncertainty (SD)</option>
@@ -163,7 +163,7 @@
 
       <!-- 3D Landslide Polygon Styling -->
       <div class="border border-[var(--border)] rounded-xl p-3 bg-[var(--background)] flex flex-col gap-2">
-        <div class="text-xs font-semibold text-[var(--foreground)]">2. Landslide Polygons (Valagussa_2021.shp)</div>
+        <div class="text-xs font-semibold text-[var(--foreground)]">2. Landslide Polygons (Valagussa et al. 2021 Inventory)</div>
 
         <div>
           <label class="text-xs text-[var(--muted-foreground)] block mb-1">Polygon 3D Representation</label>
@@ -1781,7 +1781,7 @@
           start: 16,
           end: 24,
           title: '3. Mapping Channel Steepness Index (k_sn GeoTIFF) on 3D Slopes',
-          desc: 'In Panel 1, select Channel Steepness k_sn (cop30dem_channel_tagged_pixels_near.tif) to drape LSDTopoTools fluvial steepness onto the 3D gorge walls and color polygons by k_sn.',
+          desc: 'In Panel 1, select Channel Steepness Index (k_sn) to drape LSDTopoTools fluvial steepness onto the 3D gorge walls and color polygons by k_sn.',
           targetSelector: '#btn-quick-ksn',
           cursorText: 'Layer: Channel Steepness k_sn (.tif)'
         },
